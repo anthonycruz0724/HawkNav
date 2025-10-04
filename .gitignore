@@ -1,0 +1,8 @@
+#Ignore vscode
+.vscode/
+
+#Ignore these directories
+Library/
+Logs/
+Temp/
+UserSettings/
