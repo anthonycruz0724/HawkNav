@@ -1,6 +1,6 @@
 #Ignore vscode
 .vscode/
-
+.vsconfig
 #Ignore these directories
 Library/
 Logs/
