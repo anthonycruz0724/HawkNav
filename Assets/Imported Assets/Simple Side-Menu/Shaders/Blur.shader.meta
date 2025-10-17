@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 2bb7a529c57df084fb5da0a66c2820e5
+ShaderImporter:
+  externalObjects: {}
+  defaultTextures: []
+  nonModifiableTextures: []
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 143623
+  packageName: Simple Side-Menu
+  packageVersion: 1.1.0
+  assetPath: Assets/Assets/Simple Side-Menu/Shaders/Blur.shader
+  uploadId: 484532

@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 5661c44a7b046cd4cb4f6777a441f81d
+AssemblyDefinitionImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 143623
+  packageName: Simple Side-Menu
+  packageVersion: 1.1.0
+  assetPath: Assets/Assets/Simple Side-Menu/Scripts/Core/SimpleSideMenu.asmdef
+  uploadId: 484532

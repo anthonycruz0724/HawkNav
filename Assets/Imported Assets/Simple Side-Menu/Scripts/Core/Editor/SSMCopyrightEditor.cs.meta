@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: d40ed0d1cc022284ab41e46259189f3c
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 143623
+  packageName: Simple Side-Menu
+  packageVersion: 1.1.0
+  assetPath: Assets/Assets/Simple Side-Menu/Scripts/Core/Editor/SSMCopyrightEditor.cs
+  uploadId: 484532

@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: d77280202542b274f904d89ec8964828
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 143623
+  packageName: Simple Side-Menu
+  packageVersion: 1.1.0
+  assetPath: Assets/Assets/Simple Side-Menu/Scripts/Plugins/SimpleInspectorAttributes/Runtime/DrawIfAttributeBase.cs
+  uploadId: 484532

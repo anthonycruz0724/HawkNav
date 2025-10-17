@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: f8c623577ad86e24b90c81e256dd2dd5
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 143623
+  packageName: Simple Side-Menu
+  packageVersion: 1.1.0
+  assetPath: Assets/Assets/Simple Side-Menu/Scripts/Core/Runtime/Enums/Placement.cs
+  uploadId: 484532
