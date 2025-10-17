@@ -13,9 +13,13 @@ public class SideMenuController : MonoBehaviour
     public Button button2;              // "Button 2"
     public Button button3;              // "Button 3"
     public Button button4;              // "Button 4"
+    public Button buttonHowToUse;       // ← your "How to Use" button on the side menu
 
-    [Header("Option Panel")]
-    public GameObject optionsPanel;     // panel that appears when clicking "Options"
+    [Header("Panels")]
+    public GameObject optionsPanel;     // "Options" panel
+    public GameObject howToUsePanel;    // ← "How to Use" pop-up panel
+    public Button howToStartButton;     // ← "Start" button inside that panel
+    public Toggle howToDontShowToggle;  // ← optional "Don't show again" toggle
 
     [Header("Settings")]
     [Tooltip("Slide animation duration in seconds")]
@@ -27,9 +31,11 @@ public class SideMenuController : MonoBehaviour
     private Vector2 closedPosition;
     private Vector2 openPosition;
     private Coroutine currentAnimation;
+    private const string PREF_HAS_SEEN_HOWTO = "HasSeenHowTo";
 
     void Start()
     {
+        // ✅ setup and sanity check
         if (sideMenu == null || toggleButton == null)
         {
             Debug.LogError("[SideMenuController] Assign sideMenu and toggleButton in the Inspector.");
@@ -39,25 +45,37 @@ public class SideMenuController : MonoBehaviour
 
         float menuWidth = sideMenu.rect.width;
 
-        // Define open/closed positions
+        // menu slide range
         openPosition = new Vector2(openX, sideMenu.anchoredPosition.y);
         closedPosition = new Vector2(-menuWidth, sideMenu.anchoredPosition.y);
 
-        // Start hidden
         sideMenu.anchoredPosition = closedPosition;
-
-        // Hamburger toggles open/close
         toggleButton.onClick.AddListener(ToggleMenu);
 
-        // Hook buttons
-        if (button1_Options != null) button1_Options.onClick.AddListener(OnOptionsClicked);
-        if (button2 != null) button2.onClick.AddListener(() => Debug.Log("Button 2 clicked"));
-        if (button3 != null) button3.onClick.AddListener(() => Debug.Log("Button 3 clicked"));
-        if (button4 != null) button4.onClick.AddListener(() => Debug.Log("Button 4 clicked"));
+        // === Buttons ===
+        if (button1_Options) button1_Options.onClick.AddListener(OnOptionsClicked);
+        if (button2) button2.onClick.AddListener(() => Debug.Log("Button 2 clicked"));
+        if (button3) button3.onClick.AddListener(() => Debug.Log("Button 3 clicked"));
+        if (button4) button4.onClick.AddListener(() => Debug.Log("Button 4 clicked"));
+        if (buttonHowToUse) buttonHowToUse.onClick.AddListener(ShowHowToUsePanel);
 
-        // Start with options panel hidden
-        if (optionsPanel != null)
-            optionsPanel.SetActive(false);
+        // === Panels start hidden ===
+        if (optionsPanel) optionsPanel.SetActive(false);
+        if (howToUsePanel) howToUsePanel.SetActive(false);
+
+        // === Hook up Start button in HowTo panel ===
+        if (howToStartButton)
+            howToStartButton.onClick.AddListener(() =>
+            {
+                if (howToDontShowToggle && howToDontShowToggle.isOn)
+                    PlayerPrefs.SetInt(PREF_HAS_SEEN_HOWTO, 1);
+
+                if (howToUsePanel) howToUsePanel.SetActive(false);
+            });
+
+        // === Show How-To on first launch ===
+        if (PlayerPrefs.GetInt(PREF_HAS_SEEN_HOWTO, 0) == 0)
+            ShowHowToUsePanel();
     }
 
     /// <summary>
@@ -100,16 +118,21 @@ public class SideMenuController : MonoBehaviour
     private void OnOptionsClicked()
     {
         Debug.Log("Options clicked");
-        if (optionsPanel != null)
-            optionsPanel.SetActive(true); // show panel
-
-        // Do NOT close the menu — it stays open
+        if (optionsPanel)
+            optionsPanel.SetActive(true);
     }
 
-    // === Called by a Back button on the options panel ===
-    public void HideOptionsPanel()
+    // === HOW TO USE ===
+    private void ShowHowToUsePanel()
     {
-        if (optionsPanel != null)
-            optionsPanel.SetActive(false);
+        Debug.Log("Showing How-To panel");
+        if (howToUsePanel)
+            howToUsePanel.SetActive(true);
+    }
+
+    // === Reset helper (for testing) ===
+    public void ResetHowToFlag()
+    {
+        PlayerPrefs.DeleteKey(PREF_HAS_SEEN_HOWTO);
     }
 }
