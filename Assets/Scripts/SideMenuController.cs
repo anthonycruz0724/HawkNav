@@ -2,6 +2,7 @@
 using UnityEngine.UI;
 using TMPro;
 using System.Collections;
+using System.Collections.Generic;
 
 public class SideMenuController : MonoBehaviour
 {
@@ -36,51 +37,77 @@ public class SideMenuController : MonoBehaviour
 
     void Start()
     {
+        // --- Setup side menu positions ---
         float menuWidth = sideMenu.rect.width;
         openPosition = new Vector2(openX, sideMenu.anchoredPosition.y);
         closedPosition = new Vector2(-menuWidth, sideMenu.anchoredPosition.y);
         sideMenu.anchoredPosition = closedPosition;
 
+        // --- Hook main buttons ---
         toggleButton.onClick.AddListener(ToggleMenu);
         if (buttonSearch) buttonSearch.onClick.AddListener(OpenSearchPanel);
         if (buttonHowToUse) buttonHowToUse.onClick.AddListener(ShowHowToUsePanel);
 
+        // --- Start with panels hidden ---
         if (searchPanel) searchPanel.SetActive(false);
         if (messagePanel) messagePanel.SetActive(false);
 
+        // --- Setup "How To Use" panel ---
         if (howToStartButton)
+        {
             howToStartButton.onClick.AddListener(() =>
             {
                 if (howToDontShowToggle && howToDontShowToggle.isOn)
                     PlayerPrefs.SetInt(PREF_HAS_SEEN_HOWTO, 1);
+
                 if (howToUsePanel) howToUsePanel.SetActive(false);
             });
+        }
 
+        // --- Setup dropdown list ---
         if (searchDropdown)
         {
             searchDropdown.ClearOptions();
-            searchDropdown.AddOptions(new System.Collections.Generic.List<string>
+
+            // Add your room list here 👇
+            searchDropdown.AddOptions(new List<string>
             {
                 "Select a Location",
-                "Lab 127"
+                "Room 102",
+                "Room 118",
+                "Room 119A",
+                "Room 119B",
+                "Room 125",
+                "Room 126",
+                "Room 127",
+                "Room 128",
+                "Room 130",
+                "Room 131",
+                "Room 132",
+                "Room 133",
+                "Room 136",
+                "Restroom 1"
             });
+
             searchDropdown.onValueChanged.AddListener(OnSearchDropdownChanged);
         }
 
+        // --- Setup back button ---
         if (searchBackButton)
             searchBackButton.onClick.AddListener(() => searchPanel.SetActive(false));
 
+        // --- Setup message OK button ---
         if (messageOkButton)
             messageOkButton.onClick.AddListener(() => messagePanel.SetActive(false));
 
-        // show How-To at startup unless skipped
+        // --- Show How-To panel on first run ---
         if (PlayerPrefs.GetInt(PREF_HAS_SEEN_HOWTO, 0) == 0)
             ShowHowToUsePanel();
         else
             howToUsePanel.SetActive(false);
     }
 
-    // === Slide Menu ===
+    // ====== SLIDE MENU ======
     public void ToggleMenu()
     {
         float x = sideMenu.anchoredPosition.x;
@@ -103,13 +130,41 @@ public class SideMenuController : MonoBehaviour
         sideMenu.anchoredPosition = target;
     }
 
-    // === Panels ===
-    private void ShowHowToUsePanel() => howToUsePanel?.SetActive(true);
-    private void OpenSearchPanel() => searchPanel?.SetActive(true);
+    // ====== PANELS ======
+    private void ShowHowToUsePanel()
+    {
+        if (howToUsePanel)
+        {
+            howToUsePanel.SetActive(true);
+            Debug.Log("How-To panel shown.");
+        }
+    }
 
+    private void OpenSearchPanel()
+    {
+        if (searchPanel)
+        {
+            searchPanel.SetActive(true);
+            Debug.Log("Search panel opened.");
+        }
+    }
+
+    // ====== DROPDOWN LOGIC ======
     private void OnSearchDropdownChanged(int index)
     {
-        if (index == 1 && messagePanel != null)
+        if (index == 0) return; // ignore "Select a Location"
+
+        string selectedRoom = searchDropdown.options[index].text;
+        Debug.Log($"Selected {selectedRoom} – showing WIP message");
+
+        if (messagePanel != null)
+        {
+            // Optional: dynamically change popup text
+            TextMeshProUGUI msgText = messagePanel.GetComponentInChildren<TextMeshProUGUI>();
+            if (msgText != null)
+                msgText.text = $"This is a WIP tester for {selectedRoom}.";
+
             messagePanel.SetActive(true);
+        }
     }
 }
