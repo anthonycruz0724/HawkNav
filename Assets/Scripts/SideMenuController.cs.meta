@@ -1,2 +1,26 @@
 fileFormatVersion: 2
 guid: 44688c6328ffb1247a2130a602148abf
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - sideMenu: {instanceID: 0}
+  - toggleButton: {instanceID: 0}
+  - buttonSearch: {instanceID: 0}
+  - buttonHowToUse: {instanceID: 0}
+  - buttonQR: {instanceID: 0}
+  - howToUsePanel: {fileID: 1308947231213726, guid: a0e5bb096e860324685b59b94fe71bbd, type: 3}
+  - howToStartButton: {instanceID: 0}
+  - howToDontShowToggle: {instanceID: 0}
+  - searchPanel: {instanceID: 0}
+  - searchDropdown: {instanceID: 0}
+  - searchBackButton: {instanceID: 0}
+  - messagePanel: {instanceID: 0}
+  - messageOkButton: {instanceID: 0}
+  - qrScannerPanel: {fileID: 1731849047933434, guid: 1f849deee3a88b449ae981c0346be184, type: 3}
+  - fakeScanButton: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -13,6 +13,7 @@ public class SideMenuController : MonoBehaviour
     [Header("Menu Buttons")]
     public Button buttonSearch;       // "New Search"
     public Button buttonHowToUse;     // "How To Use"
+    public Button buttonQR;           // "New QR" (to open scanner)
 
     [Header("Panels")]
     public GameObject howToUsePanel;
@@ -25,6 +26,9 @@ public class SideMenuController : MonoBehaviour
 
     public GameObject messagePanel;
     public Button messageOkButton;
+
+    public GameObject qrScannerPanel;   // QR scanner page
+    public Button fakeScanButton;       // simulate scan button
 
     [Header("Settings")]
     public float animationDuration = 0.3f;
@@ -47,10 +51,12 @@ public class SideMenuController : MonoBehaviour
         toggleButton.onClick.AddListener(ToggleMenu);
         if (buttonSearch) buttonSearch.onClick.AddListener(OpenSearchPanel);
         if (buttonHowToUse) buttonHowToUse.onClick.AddListener(ShowHowToUsePanel);
+        if (buttonQR) buttonQR.onClick.AddListener(OpenQRScanner);
 
         // --- Start with panels hidden ---
         if (searchPanel) searchPanel.SetActive(false);
         if (messagePanel) messagePanel.SetActive(false);
+        if (qrScannerPanel) qrScannerPanel.SetActive(false);
 
         // --- Setup "How To Use" panel ---
         if (howToStartButton)
@@ -99,6 +105,10 @@ public class SideMenuController : MonoBehaviour
         // --- Setup message OK button ---
         if (messageOkButton)
             messageOkButton.onClick.AddListener(() => messagePanel.SetActive(false));
+
+        // --- Setup QR Scanner panel ---
+        if (fakeScanButton)
+            fakeScanButton.onClick.AddListener(SimulateQRScan);
 
         // --- Show How-To panel on first run ---
         if (PlayerPrefs.GetInt(PREF_HAS_SEEN_HOWTO, 0) == 0)
@@ -166,5 +176,26 @@ public class SideMenuController : MonoBehaviour
 
             messagePanel.SetActive(true);
         }
+    }
+
+    // ====== QR SCANNER ======
+    private void OpenQRScanner()
+    {
+        if (qrScannerPanel)
+        {
+            qrScannerPanel.SetActive(true);
+            Debug.Log("QR Scanner page opened.");
+        }
+    }
+
+    private void SimulateQRScan()
+    {
+        Debug.Log("Simulated QR scan!");
+        if (qrScannerPanel)
+            qrScannerPanel.SetActive(false);
+
+        // After "scanning", go directly to search page
+        if (searchPanel)
+            searchPanel.SetActive(true);
     }
 }
