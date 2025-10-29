@@ -1,36 +1,41 @@
-// Assets/Scripts/Runtime/NavGraph.cs
 using System.Collections.Generic;
 using UnityEngine;
 
+[ExecuteAlways]
 public class NavGraph : MonoBehaviour
 {
-    public List<Node> nodes = new List<Node>();  // populated by editor tool
-    public Color gizmoNodeColor = new Color(0f, 1f, 1f, 0.9f);
-    public Color gizmoEdgeColor = new Color(1f, 0.2f, 1f, 0.9f);
-    public float gizmoNodeRadius = 0.12f;
+    public List<Node> nodes = new List<Node>();
+
+    [ContextMenu("Refresh Nodes")]
+    public void RefreshNodes()
+    {
+        nodes.Clear();
+        int i = 0;
+        foreach (Transform t in transform)
+        {
+            var n = t.GetComponent<Node>();
+            if (!n) continue;
+            n.id = i++;
+            nodes.Add(n);
+        }
+#if UNITY_EDITOR
+        Debug.Log($"NavGraph: {nodes.Count} nodes.");
+#endif
+    }
+
+    private void OnValidate() => RefreshNodes();
+    private void OnTransformChildrenChanged() => RefreshNodes();
 
     private void OnDrawGizmos()
     {
-        if (nodes == null) return;
-
-        // edges
-        Gizmos.color = gizmoEdgeColor;
+        Gizmos.color = new Color(0f, 0.7f, 1f, 1f);
         foreach (var n in nodes)
         {
             if (!n) continue;
             foreach (var nb in n.neighbors)
             {
-                if (nb)
-                    Gizmos.DrawLine(n.transform.position, nb.transform.position);
+                if (nb) Gizmos.DrawLine(n.transform.position, nb.transform.position);
             }
-        }
-
-        // nodes
-        Gizmos.color = gizmoNodeColor;
-        foreach (var n in nodes)
-        {
-            if (!n) continue;
-            Gizmos.DrawSphere(n.transform.position, gizmoNodeRadius);
         }
     }
 }
