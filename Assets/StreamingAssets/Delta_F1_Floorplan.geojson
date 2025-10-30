@@ -139,36 +139,6 @@
 	},{
 		"type": "Feature",
 		"properties":{
-			"id": "DF1-S1",
-			"building": "Delta",
-			"floor": 1,
-			"room_no": "S1",
-			"type": "Stairs"
-		},
-		"geometry": {
-			"type": "Polygon",
-			"coordinates": [[
-			[-95.104237, 29.577794], [-95.104220, 29.577787], [-95.104243, 29.577744], [-95.104261, 29.577751], [-95.104237, 29.577794]
-			]]
-		}
-	},{
-		"type": "Feature",
-		"properties":{
-			"id": "DF1-S2",
-			"building": "Delta",
-			"floor": 1,
-			"room_no": "S2",
-			"type": "Stairs"
-		},
-		"geometry": {
-			"type": "Polygon",
-			"coordinates": [[
-			[-95.104273, 29.577728], [-95.104456, 29.577721], [-95.104279, 29.577678], [-95.104296, 29.577685], [-95.104273, 29.577728]
-			]]
-		}
-	},{
-		"type": "Feature",
-		"properties":{
 			"id": "DF1-E1",
 			"building": "Delta",
 			"floor": 1,
