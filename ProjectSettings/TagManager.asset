@@ -45,6 +45,12 @@ TagManager:
   - name: Background
     uniqueID: 2035984077
     locked: 0
+  - name: Map
+    uniqueID: 1813247145
+    locked: 0
+  - name: User
+    uniqueID: 1290428151
+    locked: 0
   - name: Overlay
     uniqueID: 4168634669
     locked: 0
