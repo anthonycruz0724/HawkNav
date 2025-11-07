@@ -11,113 +11,90 @@ public class SideMenuController : MonoBehaviour
     public Button toggleButton;
 
     [Header("Menu Buttons")]
-    public Button buttonSearch;       // "New Search"
-    public Button buttonHowToUse;     // "How To Use"
-    public Button buttonQR;           // "New QR" (to open scanner)
+    public Button buttonDetectLocation;
+    public Button buttonInputLocation;
+    public Button buttonScanLocation;
+    public Button buttonHowToUse;
+    public Button buttonOptions;
 
     [Header("Panels")]
-    public GameObject howToUsePanel;
-    public Button howToStartButton;
-    public Toggle howToDontShowToggle;
+    public RectTransform detectPanel;
+    public TMP_Dropdown detectDropdown;
+    public Button detectNavigateButton;
+    public Button detectCloseButton;
 
-    public GameObject searchPanel;
-    public TMP_Dropdown searchDropdown;
-    public Button searchBackButton;
+    public RectTransform inputPanel;
+    public TMP_Dropdown inputStartDropdown;
+    public TMP_Dropdown inputEndDropdown;
+    public Button inputNavigateButton;
+    public Button inputCloseButton;
 
-    public GameObject messagePanel;
-    public Button messageOkButton;
+    public RectTransform scanPanel;
+    public Button scanQRButton;
+    public TMP_Dropdown scanDropdown;
+    public Button scanCloseButton;
+    public Button scanNavigateButton;
 
-    public GameObject qrScannerPanel;   // QR scanner page
-    public Button fakeScanButton;       // simulate scan button
+    public RectTransform howToUsePanel;
+    public RectTransform optionsPanel;
 
     [Header("Settings")]
-    public float animationDuration = 0.3f;
+    public float menuAnimationDuration = 0.3f;
     public float openX = 250f;
+    public Vector2 panelOnscreenPosition = Vector2.zero;     // where panels appear
+    public Vector2 panelOffscreenPosition = new Vector2(900f, 0f); // offscreen hiding position
 
     private Vector2 closedPosition;
     private Vector2 openPosition;
     private Coroutine currentAnimation;
-    private const string PREF_HAS_SEEN_HOWTO = "HasSeenHowTo";
+
+    private string selectedDetectLocation = "";
+    private string selectedScanLocation = "";
+
+    private readonly List<string> roomList = new List<string>
+    {
+        "Select a Location",
+        "Room 102",
+        "Room 118",
+        "Room 119A",
+        "Room 119B",
+        "Room 125",
+        "Room 126",
+        "Room 127",
+        "Room 128",
+        "Room 130",
+        "Room 131",
+        "Room 132",
+        "Room 133",
+        "Room 136",
+        "Restroom 1"
+    };
 
     void Start()
     {
-        // --- Setup side menu positions ---
+        // Setup side menu slide positions
         float menuWidth = sideMenu.rect.width;
         openPosition = new Vector2(openX, sideMenu.anchoredPosition.y);
         closedPosition = new Vector2(-menuWidth, sideMenu.anchoredPosition.y);
         sideMenu.anchoredPosition = closedPosition;
 
-        // --- Hook main buttons ---
         toggleButton.onClick.AddListener(ToggleMenu);
-        if (buttonSearch) buttonSearch.onClick.AddListener(OpenSearchPanel);
-        if (buttonHowToUse) buttonHowToUse.onClick.AddListener(ShowHowToUsePanel);
-        if (buttonQR) buttonQR.onClick.AddListener(OpenQRScanner);
 
-        // --- Start with panels hidden ---
-        if (searchPanel) searchPanel.SetActive(false);
-        if (messagePanel) messagePanel.SetActive(false);
-        if (qrScannerPanel) qrScannerPanel.SetActive(false);
+        // Hook up left-side menu buttons
+        buttonDetectLocation.onClick.AddListener(() => ShowPanel(detectPanel));
+        buttonInputLocation.onClick.AddListener(() => ShowPanel(inputPanel));
+        buttonScanLocation.onClick.AddListener(() => ShowPanel(scanPanel));
+        buttonHowToUse.onClick.AddListener(() => ShowPanel(howToUsePanel));
+        buttonOptions.onClick.AddListener(() => ShowPanel(optionsPanel));
 
-        // --- Setup "How To Use" panel ---
-        if (howToStartButton)
-        {
-            howToStartButton.onClick.AddListener(() =>
-            {
-                if (howToDontShowToggle && howToDontShowToggle.isOn)
-                    PlayerPrefs.SetInt(PREF_HAS_SEEN_HOWTO, 1);
+        HideAllPanels();
 
-                if (howToUsePanel) howToUsePanel.SetActive(false);
-            });
-        }
-
-        // --- Setup dropdown list ---
-        if (searchDropdown)
-        {
-            searchDropdown.ClearOptions();
-
-            // Add your room list here 👇
-            searchDropdown.AddOptions(new List<string>
-            {
-                "Select a Location",
-                "Room 102",
-                "Room 118",
-                "Room 119A",
-                "Room 119B",
-                "Room 125",
-                "Room 126",
-                "Room 127",
-                "Room 128",
-                "Room 130",
-                "Room 131",
-                "Room 132",
-                "Room 133",
-                "Room 136",
-                "Restroom 1"
-            });
-
-            searchDropdown.onValueChanged.AddListener(OnSearchDropdownChanged);
-        }
-
-        // --- Setup back button ---
-        if (searchBackButton)
-            searchBackButton.onClick.AddListener(() => searchPanel.SetActive(false));
-
-        // --- Setup message OK button ---
-        if (messageOkButton)
-            messageOkButton.onClick.AddListener(() => messagePanel.SetActive(false));
-
-        // --- Setup QR Scanner panel ---
-        if (fakeScanButton)
-            fakeScanButton.onClick.AddListener(SimulateQRScan);
-
-        // --- Show How-To panel on first run ---
-        if (PlayerPrefs.GetInt(PREF_HAS_SEEN_HOWTO, 0) == 0)
-            ShowHowToUsePanel();
-        else
-            howToUsePanel.SetActive(false);
+        SetupDetectPanel();
+        SetupInputPanel();
+        SetupScanPanel();
     }
 
-    // ====== SLIDE MENU ======
+    // ===== SIDE MENU ANIMATION =====
     public void ToggleMenu()
     {
         float x = sideMenu.anchoredPosition.x;
@@ -131,71 +108,132 @@ public class SideMenuController : MonoBehaviour
     {
         Vector2 start = sideMenu.anchoredPosition;
         float t = 0f;
-        while (t < animationDuration)
+        while (t < menuAnimationDuration)
         {
             t += Time.deltaTime;
-            sideMenu.anchoredPosition = Vector2.Lerp(start, target, t / animationDuration);
+            sideMenu.anchoredPosition = Vector2.Lerp(start, target, t / menuAnimationDuration);
             yield return null;
         }
         sideMenu.anchoredPosition = target;
     }
 
-    // ====== PANELS ======
-    private void ShowHowToUsePanel()
+    // ===== PANEL DISPLAY LOGIC =====
+    private void ShowPanel(RectTransform panel)
     {
-        if (howToUsePanel)
-        {
-            howToUsePanel.SetActive(true);
-            Debug.Log("How-To panel shown.");
-        }
+        HideAllPanels();
+        if (panel == null) return;
+
+        panel.gameObject.SetActive(true);
+        panel.anchoredPosition = panelOnscreenPosition;
+        Debug.Log($"{panel.name} opened.");
     }
 
-    private void OpenSearchPanel()
+    private void HidePanel(RectTransform panel)
     {
-        if (searchPanel)
-        {
-            searchPanel.SetActive(true);
-            Debug.Log("Search panel opened.");
-        }
+        if (panel == null) return;
+        panel.anchoredPosition = panelOffscreenPosition;
+        panel.gameObject.SetActive(false);
     }
 
-    // ====== DROPDOWN LOGIC ======
-    private void OnSearchDropdownChanged(int index)
+    private void HideAllPanels()
     {
-        if (index == 0) return; // ignore "Select a Location"
-
-        string selectedRoom = searchDropdown.options[index].text;
-        Debug.Log($"Selected {selectedRoom} – showing WIP message");
-
-        if (messagePanel != null)
-        {
-            // Optional: dynamically change popup text
-            TextMeshProUGUI msgText = messagePanel.GetComponentInChildren<TextMeshProUGUI>();
-            if (msgText != null)
-                msgText.text = $"This is a WIP tester for {selectedRoom}.";
-
-            messagePanel.SetActive(true);
-        }
+        HidePanel(detectPanel);
+        HidePanel(inputPanel);
+        HidePanel(scanPanel);
+        HidePanel(howToUsePanel);
+        HidePanel(optionsPanel);
     }
 
-    // ====== QR SCANNER ======
-    private void OpenQRScanner()
+    // ===== DETECT PANEL =====
+    private void SetupDetectPanel()
     {
-        if (qrScannerPanel)
-        {
-            qrScannerPanel.SetActive(true);
-            Debug.Log("QR Scanner page opened.");
-        }
+        if (!detectDropdown) return;
+
+        detectDropdown.ClearOptions();
+        detectDropdown.AddOptions(roomList);
+        detectDropdown.onValueChanged.AddListener(OnDetectLocationSelected);
+
+        if (detectNavigateButton)
+            detectNavigateButton.onClick.AddListener(() =>
+            {
+                Debug.Log($"Begin navigation from detected location to {selectedDetectLocation}");
+                // TODO: Add BeginNavigation script call
+            });
+
+        if (detectCloseButton)
+            detectCloseButton.onClick.AddListener(() => HidePanel(detectPanel));
     }
 
-    private void SimulateQRScan()
+    private void OnDetectLocationSelected(int index)
     {
-        Debug.Log("Simulated QR scan!");
-        if (qrScannerPanel)
-            qrScannerPanel.SetActive(false);
+        selectedDetectLocation = detectDropdown.options[index].text;
+        Debug.Log($"Selected destination location: {selectedDetectLocation}");
+    }
 
-        // After "scanning", go directly to search page
-        if (searchPanel)
-            searchPanel.SetActive(true);
+    // ===== INPUT PANEL =====
+    private void SetupInputPanel()
+    {
+        if (!inputStartDropdown || !inputEndDropdown) return;
+
+        inputStartDropdown.ClearOptions();
+        inputEndDropdown.ClearOptions();
+        inputStartDropdown.AddOptions(roomList);
+        inputEndDropdown.AddOptions(roomList);
+
+        if (inputNavigateButton)
+            inputNavigateButton.onClick.AddListener(() =>
+            {
+                string start = inputStartDropdown.options[inputStartDropdown.value].text;
+                string end = inputEndDropdown.options[inputEndDropdown.value].text;
+                Debug.Log($"Begin navigation from {start} to {end}");
+                // TODO: Add navigation logic
+                if (start == "Select a Location" || end == "Select a Location")
+                {
+                    Debug.LogWarning("Please select valid start and end locations.");
+                    return;
+                }
+                NavigationContext.SetLocations(start, end);
+
+                SceneLoader.Instance.LoadScene("2DMap");
+            });
+
+        if (inputCloseButton)
+            inputCloseButton.onClick.AddListener(() => HidePanel(inputPanel));
+    }
+
+    // ===== SCAN PANEL =====
+    private void SetupScanPanel()
+    {
+        if (scanDropdown)
+        {
+            scanDropdown.ClearOptions();
+            scanDropdown.AddOptions(roomList);
+            scanDropdown.onValueChanged.AddListener(OnScanLocationSelected);
+        }
+
+        if (scanNavigateButton)
+        {
+            scanNavigateButton.onClick.AddListener(() =>
+            {
+                Debug.Log($"Begin navigation to {selectedScanLocation} from scanned location");
+                // TODO: Add BeginNavigation script call
+            });
+        }
+
+        if (scanQRButton)
+                scanQRButton.onClick.AddListener(() =>
+                {
+                    Debug.Log("Running QR scan...");
+                    // TODO: Add Scan script call
+                });
+
+        if (scanCloseButton)
+            scanCloseButton.onClick.AddListener(() => HidePanel(scanPanel));
+    }
+
+    private void OnScanLocationSelected(int index)
+    {
+        selectedScanLocation = scanDropdown.options[index].text;
+        Debug.Log($"Selected location: {selectedScanLocation}");
     }
 }
