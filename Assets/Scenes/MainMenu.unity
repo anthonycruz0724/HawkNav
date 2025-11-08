@@ -11131,7 +11131,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 42d27eb8beb1f4e3a9031c2aab202965, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outputText: {fileID: 1015925754}
+  outputText: {fileID: 0}
   currentBeacons: []
 --- !u!4 &1846759168
 Transform:
@@ -13323,8 +13323,8 @@ MonoBehaviour:
   detectDropdown: {fileID: 2065138415}
   detectNavigateButton: {fileID: 794553234}
   detectCloseButton: {fileID: 1079569000}
-  detectLocationButton: {fileID: 0}
-  locationOutputText: {fileID: 0}
+  detectLocationButton: {fileID: 348668713}
+  locationOutputText: {fileID: 1015925754}
   inputPanel: {fileID: 1624750640}
   inputStartDropdown: {fileID: 1568763475}
   inputEndDropdown: {fileID: 1220392584}

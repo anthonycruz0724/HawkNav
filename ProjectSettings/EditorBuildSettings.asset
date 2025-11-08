@@ -18,6 +18,7 @@ EditorBuildSettings:
     path: Assets/Scenes/QRScene.unity
     guid: f6e0a7d337c5fc643bcf794999a19e6d
   m_configObjects:
+    UnityEditor.XR.ARKit.ARKitSettings: {fileID: 11400000, guid: b63c769c5aacc45b49eba9412afb1205, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
     com.unity.xr.arfoundation.simulation_settings: {fileID: 11400000, guid: c55ce6e0147184ec7a5529dc00e7f836, type: 2}
     com.unity.xr.management.loader_settings: {fileID: 11400000, guid: 5a006a04538a04b24b8f3c1c78379fac, type: 2}
