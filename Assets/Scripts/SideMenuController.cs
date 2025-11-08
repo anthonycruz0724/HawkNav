@@ -4,6 +4,7 @@ using TMPro;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor.SearchService;
+using System.Linq;
 
 public class SideMenuController : MonoBehaviour
 {
@@ -23,6 +24,8 @@ public class SideMenuController : MonoBehaviour
     public TMP_Dropdown detectDropdown;
     public Button detectNavigateButton;
     public Button detectCloseButton;
+    public Button detectLocationButton;
+    public Text locationOutputText;
 
     public RectTransform inputPanel;
     public TMP_Dropdown inputStartDropdown;
@@ -163,6 +166,64 @@ public class SideMenuController : MonoBehaviour
 
         if (detectCloseButton)
             detectCloseButton.onClick.AddListener(() => HidePanel(detectPanel));
+
+        if (detectLocationButton)
+        {
+            detectLocationButton.onClick.AddListener(() =>
+            {
+                Debug.Log("Detecting current location...");
+                var beacons = BeaconManager.Instance.currentBeacons;
+                if (beacons == null || beacons.Length == 0)
+                {
+                    Debug.LogWarning("No beacons detected yet!");
+                    if (locationOutputText != null)
+                        locationOutputText.text = "No beacons detected";
+                    return;
+                }
+
+                // Sort beacons first by proximity category, then by RSSI descending
+                var sorted = beacons
+                    .OrderBy(b => ProximityRank(b.proximity))
+                    .ThenByDescending(b => b.rssi)
+                    .ToList();
+
+                var closest = sorted.FirstOrDefault();
+                if (closest == null)
+                {
+                    if (locationOutputText != null)
+                        locationOutputText.text = "No valid beacon found";
+                    return;
+                }
+
+                string locationName;
+                if (LocationMap.BeaconToLocation.TryGetValue(closest.uuid, out locationName))
+                {
+                    Debug.Log($"Closest Beacon: {closest.uuid} → {locationName}");
+                    if (locationOutputText != null)
+                        locationOutputText.text = $"Detected: {locationName}";
+                }
+                else
+                {
+                    Debug.Log($"Unknown Beacon: {closest.uuid}");
+                    if (locationOutputText != null)
+                        locationOutputText.text = $"Unknown Beacon: {closest.uuid}";
+                }
+
+
+            });
+        }
+    }
+
+    private int ProximityRank(string proximity)
+    {
+        // Lower rank = closer
+        return proximity switch
+        {
+            "immediate" => 0,
+            "near" => 1,
+            "far" => 2,
+            _ => 3
+        };
     }
 
     private void OnDetectLocationSelected(int index)
