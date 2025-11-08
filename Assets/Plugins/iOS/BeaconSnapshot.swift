@@ -42,11 +42,30 @@ class BeaconStream: NSObject, CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager,
                          didRange beacons: [CLBeacon],
                          satisfying constraint: CLBeaconIdentityConstraint) {
-        lastBeacons = beacons
+        // Merge new beacons with existing list (update or add)
+        for beacon in beacons {
+            if let index = lastBeacons.firstIndex(where: {
+                $0.uuid == beacon.uuid &&
+                $0.major == beacon.major &&
+                $0.minor == beacon.minor
+            }) {
+                lastBeacons[index] = beacon
+            } else {
+                lastBeacons.append(beacon)
+            }
+        }
+
+        // Remove stale beacons (no recent updates)
+        lastBeacons.removeAll { $0.rssi == 0 }
     }
+
     
     private func report() {
-        let data = lastBeacons.map {
+        let uniqueBeacons = Dictionary(grouping: lastBeacons, by: { $0.uuid })
+            .compactMapValues { $0.first }
+            .values
+
+        let data = uniqueBeacons.map {
             [
                 "uuid": $0.uuid.uuidString,
                 "major": $0.major.intValue,
@@ -55,10 +74,12 @@ class BeaconStream: NSObject, CLLocationManagerDelegate {
                 "proximity": proximityString($0.proximity)
             ]
         }
+
         let jsonData = try? JSONSerialization.data(withJSONObject: data, options: .prettyPrinted)
         let jsonString = String(data: jsonData ?? Data(), encoding: .utf8) ?? "[]"
         UnitySendMessage("BeaconManager", "OnBeaconUpdate", jsonString)
     }
+
     
     private func proximityString(_ proximity: CLProximity) -> String {
         switch proximity {
