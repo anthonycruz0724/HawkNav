@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using TMPro;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.SearchService;
 
 public class SideMenuController : MonoBehaviour
 {
@@ -215,8 +216,14 @@ public class SideMenuController : MonoBehaviour
         {
             scanNavigateButton.onClick.AddListener(() =>
             {
-                Debug.Log($"Begin navigation to {selectedScanLocation} from scanned location");
+                Debug.Log($"Begin navigation to {selectedScanLocation} from {NavigationContext.StartLocation}");
                 // TODO: Add BeginNavigation script call
+                if (selectedScanLocation == "Select a Location" || string.IsNullOrEmpty(NavigationContext.StartLocation))
+                {
+                    Debug.LogWarning("Please select a valid destination location and ensure start location is set.");
+                    return;
+                }
+                SceneLoader.Instance.LoadScene("2DMap");
             });
         }
 
@@ -225,6 +232,7 @@ public class SideMenuController : MonoBehaviour
                 {
                     Debug.Log("Running QR scan...");
                     // TODO: Add Scan script call
+                    SceneLoader.Instance.LoadScene("QRScene");
                 });
 
         if (scanCloseButton)
