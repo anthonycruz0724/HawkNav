@@ -9,12 +9,17 @@ public class SceneLoader : MonoBehaviour
 {
     public static SceneLoader Instance;
 
+    [SerializeField] private string mapSceneName = "2DMap";
+
     private void Awake()
     {
         if (Instance == null)
         {
             Instance = this;
             DontDestroyOnLoad(gameObject);  // persists across scenes
+
+            // Automatically load the 2D map additively as background
+            StartCoroutine(LoadSceneAsync(mapSceneName, true));
         }
         else
         {
@@ -27,10 +32,16 @@ public class SceneLoader : MonoBehaviour
         StartCoroutine(LoadSceneAsync(sceneName));
     }
 
-    private IEnumerator LoadSceneAsync(string sceneName)
+    private IEnumerator LoadSceneAsync(string sceneName, bool additive = false)
     {
         Debug.Log($"[SceneLoader] Loading scene: {sceneName}");
-        AsyncOperation op = SceneManager.LoadSceneAsync(sceneName);
+        AsyncOperation op;
+
+        if (additive)
+            op = SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Additive);
+        else
+            op = SceneManager.LoadSceneAsync(sceneName);
+
         while (!op.isDone)
             yield return null;
 
