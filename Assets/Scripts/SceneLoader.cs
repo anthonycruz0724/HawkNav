@@ -19,7 +19,7 @@ public class SceneLoader : MonoBehaviour
             DontDestroyOnLoad(gameObject);  // persists across scenes
 
             // Automatically load the 2D map additively as background
-            StartCoroutine(LoadSceneAsync(mapSceneName, true));
+           StartCoroutine(LoadSceneAsync(mapSceneName, true));
         }
         else
         {

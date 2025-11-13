@@ -4,6 +4,7 @@ using TMPro;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System;
 
 public class SideMenuController : MonoBehaviour
 {
@@ -37,6 +38,7 @@ public class SideMenuController : MonoBehaviour
     public TMP_Dropdown scanDropdown;
     public Button scanCloseButton;
     public Button scanNavigateButton;
+    public TMP_Text warnScanText;
 
     public RectTransform howToUsePanel;
     public RectTransform optionsPanel;
@@ -54,27 +56,18 @@ public class SideMenuController : MonoBehaviour
     private string selectedDetectLocation = "";
     private string selectedScanLocation = "";
 
-    private readonly List<string> roomList = new List<string>
-    {
-        "Select a Location",
-        "Room 102",
-        "Room 118",
-        "Room 119A",
-        "Room 119B",
-        "Room 125",
-        "Room 126",
-        "Room 127",
-        "Room 128",
-        "Room 130",
-        "Room 131",
-        "Room 132",
-        "Room 133",
-        "Room 136",
-        "Restroom 1"
-    };
-
+    private List<string> roomList;
     void Start()
     {
+
+        roomList = new List<string>{
+            "Hallway Node 1",
+            "Room 132",
+            "Room 133",
+            "Room 136",
+            "Bathroom",
+            "Room 124"
+        };
         // Setup side menu slide positions
         float menuWidth = sideMenu.rect.width;
         openPosition = new Vector2(openX, sideMenu.anchoredPosition.y);
@@ -151,7 +144,6 @@ public class SideMenuController : MonoBehaviour
     private void SetupDetectPanel()
     {
         if (!detectDropdown) return;
-
         detectDropdown.ClearOptions();
         detectDropdown.AddOptions(roomList);
         detectDropdown.onValueChanged.AddListener(OnDetectLocationSelected);
@@ -171,42 +163,33 @@ public class SideMenuController : MonoBehaviour
             detectLocationButton.onClick.AddListener(() =>
             {
                 Debug.Log("Detecting current location...");
-                var beacons = BeaconManager.Instance.currentBeacons;
-                if (beacons == null || beacons.Length == 0)
+
+                try
                 {
-                    Debug.LogWarning("No beacons detected yet!");
-                    if (locationOutputText != null)
-                        locationOutputText.text = "No beacons detected";
-                    return;
+
+                    var sorted = BeaconManager.Instance.currentBeacons
+                        .OrderBy(b => ProximityRank(b.proximity)).ThenByDescending(b => b.rssi).ToList();
+
+                    var closestBeacon = sorted.FirstOrDefault();
+                    var locationDictionary = NavGraph.Instance.locationMap;
+                    if (closestBeacon.minor != 0)
+                    {
+                        string locationName = locationDictionary[closestBeacon.minor].shortname;
+                        Debug.Log($"Closest Beacon: {locationName}");
+                        NavigationContext.StartLocation = locationDictionary[closestBeacon.minor];
+                        if (locationOutputText != null)
+                            locationOutputText.text = $"Detected: {locationName}";
+                    }
+                    else
+                    {
+                        Debug.Log($"NO BEACONS NEAR");
+                    }
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError("Exception: " + e);
                 }
 
-                // Sort beacons first by proximity category, then by RSSI descending
-                var sorted = beacons
-                    .OrderBy(b => ProximityRank(b.proximity))
-                    .ThenByDescending(b => b.rssi)
-                    .ToList();
-
-                var closest = sorted.FirstOrDefault();
-                if (closest == null)
-                {
-                    if (locationOutputText != null)
-                        locationOutputText.text = "No valid beacon found";
-                    return;
-                }
-
-                string locationName;
-                if (LocationMap.BeaconToLocation.TryGetValue(closest.uuid, out locationName))
-                {
-                    Debug.Log($"Closest Beacon: {closest.uuid} → {locationName}");
-                    if (locationOutputText != null)
-                        locationOutputText.text = $"Detected: {locationName}";
-                }
-                else
-                {
-                    Debug.Log($"Unknown Beacon: {closest.uuid}");
-                    if (locationOutputText != null)
-                        locationOutputText.text = $"Unknown Beacon: {closest.uuid}";
-                }
 
 
             });
@@ -235,7 +218,6 @@ public class SideMenuController : MonoBehaviour
     private void SetupInputPanel()
     {
         if (!inputStartDropdown || !inputEndDropdown) return;
-
         inputStartDropdown.ClearOptions();
         inputEndDropdown.ClearOptions();
         inputStartDropdown.AddOptions(roomList);
@@ -253,9 +235,10 @@ public class SideMenuController : MonoBehaviour
                     Debug.LogWarning("Please select valid start and end locations.");
                     return;
                 }
-                NavigationContext.SetLocations(start, end);
-
-                SceneLoader.Instance.LoadScene("2DMap");
+                NavigationContext.StartLocation = NavGraph.Instance.nameToNode[start];
+                NavigationContext.EndLocation = NavGraph.Instance.nameToNode[end];
+                Debug.Log($"{NavigationContext.EndLocation.shortname}");
+                Debug.Log($"{NavigationContext.StartLocation.shortname}");
             });
 
         if (inputCloseButton)
@@ -265,6 +248,7 @@ public class SideMenuController : MonoBehaviour
     // ===== SCAN PANEL =====
     private void SetupScanPanel()
     {
+                
         if (scanDropdown)
         {
             scanDropdown.ClearOptions();
@@ -276,24 +260,35 @@ public class SideMenuController : MonoBehaviour
         {
             scanNavigateButton.onClick.AddListener(() =>
             {
-                Debug.Log($"Begin navigation to {selectedScanLocation} from {NavigationContext.StartLocation}");
+                Dictionary<string,Node> nameToNode = GenerateDictionary();
+                Debug.Log($"Begin navigation to {selectedScanLocation} from {NavigationContext.StartLocation.shortname}");
                 // TODO: Add BeginNavigation script call
-                if (selectedScanLocation == "Select a Location" || string.IsNullOrEmpty(NavigationContext.StartLocation))
+                if (selectedScanLocation == "Select a Location" || NavigationContext.EndLocation != null)
                 {
                     Debug.LogWarning("Please select a valid destination location and ensure start location is set.");
                     return;
                 }
-                SceneLoader.Instance.LoadScene("2DMap");
             });
         }
 
         if (scanQRButton)
-                scanQRButton.onClick.AddListener(() =>
+        {
+            scanQRButton.onClick.AddListener(() =>
                 {
-                    Debug.Log("Running QR scan...");
-                    // TODO: Add Scan script call
-                    SceneLoader.Instance.LoadScene("QRScene");
+                    if (NavigationContext.EndLocation != null)
+                    {
+                        Debug.Log("Running QR scan...");
+                        // TODO: Add Scan script call
+                        SceneLoader.Instance.LoadScene("QRScene");
+                    }
+                    else
+                    {
+                        warnScanText.text = "Please Select END Location Before Proceeding";
+                        Debug.Log("TEST");
+                    }
+
                 });
+        }
 
         if (scanCloseButton)
             scanCloseButton.onClick.AddListener(() => HidePanel(scanPanel));
@@ -302,6 +297,35 @@ public class SideMenuController : MonoBehaviour
     private void OnScanLocationSelected(int index)
     {
         selectedScanLocation = scanDropdown.options[index].text;
+        NavigationContext.StartLocation = NavGraph.Instance.nameToNode[selectedScanLocation];
         Debug.Log($"Selected location: {selectedScanLocation}");
+    }
+
+    private static List<String> GenerateMenuOptions()
+    {
+        List<String> menu = new List<String>();
+
+        foreach (var node in NavGraph.Instance.nodes)
+        {
+            if (node.isLocation)
+            {
+                menu.Add(node.shortname);
+            }
+        }
+
+        return menu;
+    }
+
+    private static Dictionary<string, Node> GenerateDictionary()
+    {
+        Dictionary<string, Node> shortToNode = new Dictionary<string, Node>();
+        foreach (var node in NavGraph.Instance.nodes)
+        {
+            if (node.isLocation)
+            {
+                shortToNode.Add(node.shortname, node);
+            }
+        }
+        return shortToNode;
     }
 }

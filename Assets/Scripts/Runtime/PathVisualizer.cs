@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 [RequireComponent(typeof(LineRenderer))]
@@ -23,13 +24,12 @@ public class PathVisualizer : MonoBehaviour
 
     void Update()
     {
+        destination = NavigationContext.EndLocation;
         if (!graph || !userIcon || !destination) return;
-
-        Node start = graph.NearestNode(userIcon.position);
+        Node start = NavigationContext.StartLocation;
         if (start == null) return;
-
         currentPath = Pathfinder.FindPath(start, destination);
-
+        Debug.Log("Navigation started");
         if (currentPath != null && currentPath.Count > 1)
         {
             line.positionCount = currentPath.Count;

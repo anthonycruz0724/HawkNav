@@ -30,7 +30,6 @@ public class BeaconManager : MonoBehaviour
     public Text outputText;
 
     public BeaconData[] currentBeacons;
-
     void Awake()
     {
         if (Instance == null)
@@ -82,6 +81,6 @@ public class BeaconManager : MonoBehaviour
             if (outputText != null)
                 outputText.text = "Error parsing beacon data";
         }
-    }
+    }   
 }
 

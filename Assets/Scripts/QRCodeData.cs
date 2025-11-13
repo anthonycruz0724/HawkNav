@@ -1,13 +1,16 @@
 using UnityEngine;
 using System;
+using System.Collections.Generic;
 
 [Serializable]
 public class QRCodeData
 {
-    public string id;
+    public int id;
     public string name;
-    public int floor;
+    public bool isLocation;
     public float x;
     public float y;
+
+    public List<int> connections;
         
 }
