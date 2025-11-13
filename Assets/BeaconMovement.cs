@@ -1,14 +1,24 @@
 using UnityEngine;
 using System.Linq;
 using System;
+using System.Collections.Generic;
 public class BeaconMovement : MonoBehaviour
 {
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-
-       var sorted = BeaconManager.Instance.currentBeacons
+        List<BeaconData> sorted = null;
+        try
+        {
+            sorted = BeaconManager.Instance.currentBeacons
                         .OrderBy(b => ProximityRank(b.proximity)).ThenByDescending(b => b.rssi).ToList();
+        }
+        catch (Exception e)
+        {
+            Debug.Log("Null Reference from BeaconMovement");
+        }
+
+       
 
         if (sorted != null)
         {

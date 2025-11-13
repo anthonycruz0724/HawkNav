@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UI;
+using System;
 
 [RequireComponent(typeof(LineRenderer))]
 public class PathVisualizer : MonoBehaviour
@@ -12,8 +14,12 @@ public class PathVisualizer : MonoBehaviour
     private LineRenderer line;
     private List<Node> currentPath;
 
+    private Dictionary<int, Node> locationMapLocal;
     void Awake()
     {
+        foreach(Node n in graph.nodes){
+            locationMapLocal.Add(n.minor, n);
+        }
         line = GetComponent<LineRenderer>();
         line.positionCount = 0;
         line.startWidth = 0.05f;
@@ -24,10 +30,20 @@ public class PathVisualizer : MonoBehaviour
 
     void Update()
     {
-        destination = NavigationContext.EndLocation;
+
+        try
+        {
+            destination = locationMapLocal[NavigationContext.EndLocation.minor];
+        }
+        catch(Exception e)
+        {
+            Debug.Log("Dictionary doesn't contain key");
+        }
         if (!graph || !userIcon || !destination) return;
-        Node start = NavigationContext.StartLocation;
+        Node start = locationMapLocal[NavigationContext.StartLocation.minor];
+        Debug.Log("Second Line check");
         if (start == null) return;
+        Debug.Log("Check start status");
         currentPath = Pathfinder.FindPath(start, destination);
         Debug.Log("Navigation started");
         if (currentPath != null && currentPath.Count > 1)
