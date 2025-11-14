@@ -1,0 +1,88 @@
+{
+    "beacons": [
+        {
+            "shortname": "Hallway Node 12",
+            "minor": 12
+        },
+        {
+            "shortname": "Hallway Node 16 ",
+            "minor": 16
+        },
+        {
+            "shortname": "Hallway Node 14",
+            "minor": 14
+        },
+        {
+            "shortname": "Bathroom",
+            "minor": 4100
+        },
+        {
+            "shortname": "Hallway Node 13",
+            "minor": 13
+        },
+        {
+            "shortname": "Hallway Node 5",
+            "minor": 5
+        },
+        {
+            "shortname": "Hallway Node 10",
+            "minor": 10
+        },
+        {
+            "shortname": "Hallway Node 8",
+            "minor": 8
+        },
+        {
+            "shortname": "Hallway Node 9",
+            "minor": 9
+        },
+        {
+            "shortname": "Hallway Node 15",
+            "minor": 15
+        },
+        {
+            "shortname": "Hallway Node 2",
+            "minor": 2
+        },
+        {
+            "shortname": "Hallway Node 4",
+            "minor": 4
+        },
+        {
+            "shortname": "Hallway Node 7",
+            "minor": 7
+        },
+        {
+            "shortname": "Room 132",
+            "minor": 4132
+        },
+        {
+            "shortname": "Hallway Node 6",
+            "minor": 6
+        },
+        {
+            "shortname": "Room 124",
+            "minor": 4124
+        },
+        {
+            "shortname": "Hallway Node 1",
+            "minor": 1
+        },
+        {
+            "shortname": "Hallway Node 3",
+            "minor": 3
+        },
+        {
+            "shortname": "Room 136 ",
+            "minor": 4136
+        },
+        {
+            "shortname": "Hallway Node 11",
+            "minor": 11
+        },
+        {
+            "shortname": "Room 133",
+            "minor": 4133
+        }
+    ]
+}
