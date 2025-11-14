@@ -153,6 +153,8 @@ public class SideMenuController : MonoBehaviour
             {
                 Debug.Log($"Begin navigation from detected location to {selectedDetectLocation}");
                 // TODO: Add BeginNavigation script call
+                var locationDictionary = NavGraph.Instance.nameToNode;
+                NavigationContext.EndLocation = locationDictionary[detectDropdown.options[detectDropdown.value].text];
             });
 
         if (detectCloseButton)
