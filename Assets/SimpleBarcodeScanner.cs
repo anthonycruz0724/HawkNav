@@ -21,8 +21,8 @@ public class SimpleBarcodeScanner : MonoBehaviour
             Debug.Log($"[SimpleBarcodeScanner] Detected barcode: {barcodeAsText.text}");
             
             QRCodeData qrCodeData = JsonUtility.FromJson<QRCodeData>(barcodeAsText.text);
-            Debug.Log($"[SimpleBarcodeScanner] Parsed QRCodeData: ID={qrCodeData.id}, Name={qrCodeData.name}, isLocation={qrCodeData.isLocation}, X={qrCodeData.x}, Y={qrCodeData.y}");
-            NavigationContext.EndLocation = NavGraph.Instance.locationMap[qrCodeData.id]; // Set destination as needed
+            Debug.Log($"[SimpleBarcodeScanner] Parsed QRCodeData: shortname={qrCodeData.shortname}. minor={qrCodeData.minor}");
+            NavigationContext.EndLocation = NavGraph.Instance.locationMap[qrCodeData.minor]; // Set destination as needed
             SceneLoader.Instance.LoadScene("MainMenu");
         }
         else

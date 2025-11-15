@@ -5,12 +5,8 @@ using System.Collections.Generic;
 [Serializable]
 public class QRCodeData
 {
-    public int id;
-    public string name;
-    public bool isLocation;
-    public float x;
-    public float y;
+    public string shortname;
 
-    public List<int> connections;
+    public int minor;
         
 }

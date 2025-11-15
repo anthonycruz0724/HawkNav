@@ -155,6 +155,7 @@ public class SideMenuController : MonoBehaviour
                 // TODO: Add BeginNavigation script call
                 var locationDictionary = NavGraph.Instance.nameToNode;
                 NavigationContext.EndLocation = locationDictionary[detectDropdown.options[detectDropdown.value].text];
+                HideAllPanels();
             });
 
         if (detectCloseButton)

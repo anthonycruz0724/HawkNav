@@ -6,8 +6,8 @@ public class NavGraph : MonoBehaviour
 {
     public static NavGraph Instance { get; private set; }
     public List<Node> nodes = new List<Node>();
-    public Dictionary<int, Node> locationMap;
-    public Dictionary<string, Node> nameToNode;
+    public Dictionary<int, Node> locationMap; //minor to Node
+    public Dictionary<string, Node> nameToNode; // shortname to Node
     private void Awake()
     {
         RefreshNodes();
