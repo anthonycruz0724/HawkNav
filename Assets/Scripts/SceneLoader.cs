@@ -30,6 +30,10 @@ public class SceneLoader : MonoBehaviour
     public void LoadScene(string sceneName)
     {
         StartCoroutine(LoadSceneAsync(sceneName));
+        if(sceneName == "MainMenu")
+        {
+            StartCoroutine(LoadSceneAsync("2DMap", true));
+        }
     }
 
     private IEnumerator LoadSceneAsync(string sceneName, bool additive = false)

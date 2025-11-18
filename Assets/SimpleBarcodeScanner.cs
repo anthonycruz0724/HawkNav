@@ -22,7 +22,7 @@ public class SimpleBarcodeScanner : MonoBehaviour
             
             QRCodeData qrCodeData = JsonUtility.FromJson<QRCodeData>(barcodeAsText.text);
             Debug.Log($"[SimpleBarcodeScanner] Parsed QRCodeData: shortname={qrCodeData.shortname}. minor={qrCodeData.minor}");
-            NavigationContext.EndLocation = NavGraph.Instance.locationMap[qrCodeData.minor]; // Set destination as needed
+            NavigationContext.StartLocation = NavGraph.Instance.locationMap[qrCodeData.minor]; // Set destination as needed
             SceneLoader.Instance.LoadScene("MainMenu");
         }
         else

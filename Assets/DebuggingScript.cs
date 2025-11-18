@@ -31,8 +31,7 @@ public class DebuggingScript : MonoBehaviour
         //         Debug.Log("Touched: " + r.gameObject.name);
         //     }
         // }
-
-        // Debug.Log(NavigationContext.EndLocation.shortname);
-        // Debug.Log(NavigationContext.StartLocation.shortname);
+        Debug.Log(NavigationContext.EndLocation.shortname);
+        Debug.Log(NavigationContext.StartLocation.shortname);
     }
 }

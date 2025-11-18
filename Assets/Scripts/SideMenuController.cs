@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System;
+using UnityEngine.SceneManagement;
 
 public class SideMenuController : MonoBehaviour
 {
@@ -66,7 +67,8 @@ public class SideMenuController : MonoBehaviour
             "Room 133",
             "Room 136",
             "Bathroom",
-            "Room 124"
+            "Room 124",
+            "Hallway Node 16"
         };
         // Setup side menu slide positions
         float menuWidth = sideMenu.rect.width;
@@ -156,6 +158,7 @@ public class SideMenuController : MonoBehaviour
                 var locationDictionary = NavGraph.Instance.nameToNode;
                 NavigationContext.EndLocation = locationDictionary[detectDropdown.options[detectDropdown.value].text];
                 HideAllPanels();
+                ToggleMenu();
             });
 
         if (detectCloseButton)
@@ -165,10 +168,9 @@ public class SideMenuController : MonoBehaviour
         {
             detectLocationButton.onClick.AddListener(() =>
             {
+                Debug.Log("Clicked!");
                 Debug.Log("Detecting current location...");
 
-                try
-                {
 
                     var sorted = BeaconManager.Instance.currentBeacons
                         .OrderBy(b => ProximityRank(b.proximity)).ThenByDescending(b => b.rssi).ToList();
@@ -187,12 +189,6 @@ public class SideMenuController : MonoBehaviour
                     {
                         Debug.Log($"NO BEACONS NEAR");
                     }
-                }
-                catch (Exception e)
-                {
-                    Debug.LogError("Exception: " + e);
-                }
-
 
 
             });
@@ -242,6 +238,8 @@ public class SideMenuController : MonoBehaviour
                 NavigationContext.EndLocation = NavGraph.Instance.nameToNode[end];
                 Debug.Log($"{NavigationContext.EndLocation.shortname}");
                 Debug.Log($"{NavigationContext.StartLocation.shortname}");
+                HideAllPanels();
+                ToggleMenu();
             });
 
         if (inputCloseButton)
@@ -300,7 +298,7 @@ public class SideMenuController : MonoBehaviour
     private void OnScanLocationSelected(int index)
     {
         selectedScanLocation = scanDropdown.options[index].text;
-        NavigationContext.StartLocation = NavGraph.Instance.nameToNode[selectedScanLocation];
+        NavigationContext.EndLocation = NavGraph.Instance.nameToNode[selectedScanLocation];
         Debug.Log($"Selected location: {selectedScanLocation}");
     }
 

@@ -38,13 +38,22 @@ public class PathVisualizer : MonoBehaviour
 
     void Start()
     {
+                locationMapLocal = new Dictionary<int, Node>();
+        foreach (Node n in graph.nodes)
+        {
+            locationMapLocal.Add(n.minor, n);
+        }
         if (finished == null)
             finished = GameObject.Find("FinishedText").GetComponent<TMP_Text>();
     }
 
     void Update()
     {
-
+                locationMapLocal = new Dictionary<int, Node>();
+        foreach (Node n in graph.nodes)
+        {
+            locationMapLocal.Add(n.minor, n);
+        }
         try
         {
             destination = locationMapLocal[NavigationContext.EndLocation.minor];
